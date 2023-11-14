@@ -43,4 +43,4 @@ if __name__ == '__main__':
     creds = connector.read_db_creds()
     engine = connector.init_db_engine(creds)
     df = connector.read_rds_table(engine)
-    connector.export_to_csv()
+    connector.export_to_csv(df)

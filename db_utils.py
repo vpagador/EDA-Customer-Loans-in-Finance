@@ -24,9 +24,8 @@ class RDSDatabaseConnector:
         table_list = inspector.get_table_names()
         table = table_list[0] 
         try:
-            query = f"SELECT * from {table};"
             with engine as con:
-                df = pd.read_sql_query(query, con=con)
+                df = pd.read_sql_table(table, con=con)
             return df
 
         except Exception as err:

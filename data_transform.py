@@ -1,7 +1,5 @@
 import pandas as pd
-import pandasgui as pdgui
 import numpy as np
-import re
 from yaml import load,SafeLoader
 from sklearn.preprocessing import OrdinalEncoder
 
@@ -22,10 +20,37 @@ class DataTransform:
         with open(filepath) as f:
             cast_col_types = load(f, Loader=SafeLoader)
         return cast_col_types
-
-    def transform_employment_length(self, df:pd.DataFrame):
+    
+    def extract_digit_from_string(self, string):
         '''
-        Extracts number value from employment_length column and casts to float
+        Extracts number value from string
+        '''
+        try:
+            digit =''
+            for char in string:
+                if char.isdigit():
+                    digit = digit + char
+            return digit
+        except:
+            pass
+        
+    
+    def transform_digit_string(self, df:pd.DataFrame, column = 'term'):
+        '''
+        Convert string to int  
+        
+        Parameters:
+        -----------
+            df: pd.DataFrame
+                Data set represented in pandas dataframe
+        '''
+        df[column] = df[column].apply(lambda x: self.extract_digit_from_string(x))
+
+        return df
+
+    def encode_transform(self, df:pd.DataFrame, column = 'employment_length'):
+        '''
+        Encodes employment_length column 
         
         Parameters:
         -----------
@@ -33,8 +58,8 @@ class DataTransform:
                 Data set represented in pandas dataframe
         '''
         enc = OrdinalEncoder()
-        X = df[['employment_length']]
-        df[['employment_length']] = enc.fit_transform(X)  
+        X = df[[column]]
+        df[[column]] = enc.fit_transform(X)
    
         return df
     
@@ -60,7 +85,7 @@ class DataTransform:
             # Casts datetypes
             elif cast_col_types[col] in ['date']:
                 df[col] = df[col].apply(pd.to_datetime, format = 'mixed')
-            # Casts otehr types like category
+            # Casts other types like category
             else:
                 df[col] = df[col].astype(cast_col_types[col])
             

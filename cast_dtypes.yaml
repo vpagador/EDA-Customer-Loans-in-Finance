@@ -3,7 +3,7 @@ member_id            :       int32
 loan_amount           :       int32
 funded_amount         :       float32
 funded_amount_inv     :       float32
-term                  :       category
+term                  :       int32
 int_rate              :       float32
 instalment            :       float32
 grade                 :       category 

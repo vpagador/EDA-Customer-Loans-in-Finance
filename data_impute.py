@@ -3,7 +3,7 @@ import numpy as np
 from sklearn.impute import KNNImputer
 
 
-class DataFrameTransform:
+class DataImpute:
 
     @staticmethod
     def knn_imputer(df, column):

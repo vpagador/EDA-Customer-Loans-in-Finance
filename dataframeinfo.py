@@ -71,17 +71,31 @@ class DataFrameInfo:
         null_columns = self.get_only_columns_with_nulls()
         return null_columns.T.columns
 
-    def show_categorical_columns(self):
+    def list_categorical_columns(self, return_list = False):
         categorical_columns = [col for col in self.df.columns
                                     if col not in self.numerical_column_names][3:]
                                    # index list to skip (Unnamed), id and member_id
-        value_counts = [len(self.df[col].unique()) for col in categorical_columns]
-        category_columns_values_info = pd.DataFrame({'categorical column':categorical_columns,'number of unique values': value_counts})
-        print(f"\n\nCategorical Columns and their Unique Values: \n{category_columns_values_info}")
+        if return_list:
+            return categorical_columns
+        else:
+            value_counts = [len(self.df[col].unique()) for col in categorical_columns]
+            category_columns_values_info = pd.DataFrame({'categorical column':categorical_columns,'number of unique values': value_counts})
+            print(f"\n\nCategorical Columns and their Unique Values: \n{category_columns_values_info}")
 
-    def show_numerical_columns(self):
+    def list_numerical_columns(self, return_list = False):
         numerical_columns = [col for col in self.df.columns
                                     if col in self.numerical_column_names][3:]
-        value_counts = [len(self.df[col].unique()) for col in numerical_columns]
-        numerical_columns_values_info = pd.DataFrame({'categorical column':numerical_columns,'number of unique values': value_counts})
-        print(f"\n\nNumerical Columns and their Unique Values: \n{numerical_columns_values_info}")
+        if return_list:
+            return numerical_columns
+        else:
+            value_counts = [len(self.df[col].unique()) for col in numerical_columns]
+            numerical_columns_values_info = pd.DataFrame({'categorical column':numerical_columns,'number of unique values': value_counts})
+            print(f"\n\nNumerical Columns and their Unique Values: \n{numerical_columns_values_info}")
+
+    def list_datetime_columns(self):
+        datetime_columns = []
+        for column in self.df.columns:
+            if self.df[column].dtype == '<M8[ns]':
+                datetime_columns.append(column)
+        
+        return datetime_columns 

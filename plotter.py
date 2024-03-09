@@ -35,3 +35,8 @@ class Plotter():
         qqplot(data , scale=1 ,line='q', fit=True)
         plt.title(label=title)
         plt.show()
+
+    def plot_box_whisker(self, data, title):
+        plt.boxplot(data)
+        plt.title(label=title)
+        plt.show()

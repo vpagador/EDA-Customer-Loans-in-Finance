@@ -1,22 +1,26 @@
 import pandas as pd
+import numpy as np
 
 class DataFrameInfo:
 
     def __init__(self, df: pd.DataFrame):
         self.df = df
-        # All numerical columns except the frist three
-        # columns: (Unnamed), id and member_id
-        column_statistics = self.df.describe()
-        self.numerical_column_names = column_statistics.columns
-        self.column_statistics = column_statistics.T
-        
+        self.column_statistics = self.get_statistics().T
+        # column_tuple_1: numerical_columns, non_numerical_columns
+        column_tuple_1 = self.classify_into_numerical_non_numerical_columns()
+        self.numerical_columns = column_tuple_1[0]
+        self.non_numerical_columns = column_tuple_1[1]
+        # column_tuple_2: datetime_columns, datetime_columns
+        column_tuple_2 = self.classify_into_datetime_categorical_columns()
+        self.datetime_columns = column_tuple_2[0]
+        self.categorical_columns = column_tuple_2[1]
 
     def describe_column_dtypes(self) -> pd.DataFrame:
         column_dtypes = self.df.info(verbose=True, show_counts=False) 
         return column_dtypes
     
     def get_statistics(self) -> pd.DataFrame:
-        all_stats = self.column_statistics
+        all_stats = self.df.describe()
         return all_stats
     
     def get_mean(self):
@@ -40,7 +44,7 @@ class DataFrameInfo:
         return column_value_counts
 
     def info_null_counts(self):
-        numerical_columns_df = self.df[self.numerical_column_names]
+        numerical_columns_df = self.df[self.numerical_columns]
         null_counts = numerical_columns_df.isna().sum()
         total_value_count = numerical_columns_df.count() + null_counts
         percentage_null_counts = round((null_counts/total_value_count),4)*100
@@ -71,31 +75,34 @@ class DataFrameInfo:
         null_columns = self.get_only_columns_with_nulls()
         return null_columns.T.columns
 
-    def list_categorical_columns(self, return_list = False):
-        categorical_columns = [col for col in self.df.columns
-                                    if col not in self.numerical_column_names][3:]
-                                   # index list to skip (Unnamed), id and member_id
-        if return_list:
-            return categorical_columns
-        else:
-            value_counts = [len(self.df[col].unique()) for col in categorical_columns]
-            category_columns_values_info = pd.DataFrame({'categorical column':categorical_columns,'number of unique values': value_counts})
-            print(f"\n\nCategorical Columns and their Unique Values: \n{category_columns_values_info}")
+    def classify_into_numerical_non_numerical_columns(self):
+        numerical_columns = []
+        non_numerical_columns = []
 
-    def list_numerical_columns(self, return_list = False):
-        numerical_columns = [col for col in self.df.columns
-                                    if col in self.numerical_column_names][3:]
-        if return_list:
-            return numerical_columns
-        else:
-            value_counts = [len(self.df[col].unique()) for col in numerical_columns]
-            numerical_columns_values_info = pd.DataFrame({'categorical column':numerical_columns,'number of unique values': value_counts})
-            print(f"\n\nNumerical Columns and their Unique Values: \n{numerical_columns_values_info}")
+        for col in self.df.columns:
+            if type(self.df[col][0]) in [np.int32, np.float32, np.int64, np.float64]:
+                numerical_columns.append(col)
+            else:
+                non_numerical_columns.append(col)
+        return numerical_columns, non_numerical_columns
 
-    def list_datetime_columns(self):
+    def classify_into_datetime_categorical_columns(self):
+        self.non_numerical_columns
         datetime_columns = []
-        for column in self.df.columns:
-            if self.df[column].dtype == '<M8[ns]':
-                datetime_columns.append(column)
-        
-        return datetime_columns 
+        categorical_columns = []
+        for col in self.non_numerical_columns:
+            try:
+                is_column_datetime = self.df[col][0:1].apply(pd.to_datetime, format = 'mixed')
+                if type(is_column_datetime[0]) == pd._libs.tslibs.timestamps.Timestamp:
+                    datetime_columns.append(col)
+            except:
+                categorical_columns.append(col)
+                pass
+        return datetime_columns, categorical_columns
+
+
+if __name__=='__main__':
+    df = pd.read_csv("loan_payments.csv")
+    df_info = DataFrameInfo(df)
+    print(df_info.numerical_columns)
+    print(df_info.get_statistics())

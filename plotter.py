@@ -24,11 +24,14 @@ class Plotter():
             plt.title(column)
         plt.show()
     
-    def plot_histogram(self, feature,title):
-        plt.hist(feature)
+    def plot_histogram(self, data, title, figsize=[2,2],
+                       color = "skyblue", edgecolor = "gold"):
+        plt.figure(figsize=figsize)
+        plt.hist(data, color = color, edgecolor = edgecolor)
         plt.title(label=title)
         plt.show()
 
-    def plot_qq(self, feature):
-        qqplot(feature , scale=1 ,line='q')
+    def plot_qq(self, data, title):
+        qqplot(data , scale=1 ,line='q', fit=True)
+        plt.title(label=title)
         plt.show()

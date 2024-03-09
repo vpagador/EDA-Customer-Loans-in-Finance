@@ -1,2 +1,4 @@
+csv_files/
+unofficial_runs/
 __pycache__/
 credentials.yaml

@@ -2,3 +2,5 @@ csv_files/
 unofficial_runs/
 __pycache__/
 credentials.yaml
+plot_and_detect_outliers.ipynb
+plot_and_transform_skew.ipynb

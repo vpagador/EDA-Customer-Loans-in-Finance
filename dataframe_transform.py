@@ -24,22 +24,46 @@ class DataFrameTransform:
             
         return df
     
-    def detect_outliers_iqr(df, column):
-        df_slice= df[[column]] 
-        Q1 = df_slice[column].quantile(0.25)
-        Q3 = df_slice[column].quantile(0.75)
+    @staticmethod
+    def detect_outliers_iqr(df, column, 
+                            show_general_outlier_info =True, 
+                            show_top_bottom_outliers = False):
+        # Testing IQR for outliers 
+        column_copy_df = df[[column]]
+
+        MIN = column_copy_df.quantile(0)[0]
+        Q1 = column_copy_df.quantile(0.25)[0]
+        Q3 = column_copy_df.quantile(0.75)[0]
+        MAX = column_copy_df.quantile(1)[0]
+
         # Calculate IQR
         IQR = Q3 - Q1
-        print(f"Q1 (25th percentile): {Q1}")
-        print(f"Q3 (75th percentile): {Q3}")
-        print(f"IQR: {IQR}")
 
         # Identify outliers
-        outliers = df_slice[(df_slice[column] < (Q1 - 1.5 * IQR)) | (df_slice[column] > (Q3 + 1.5 * IQR))]
-        print("Outliers:")
-        outliers_not_nan = outliers[outliers[column].isna() == False]
-        return outliers_not_nan
-    
+        bottom_test = Q1 - 1.5 * IQR
+        top_test = Q3 + 1.5 * IQR
+        outliers = column_copy_df[(column_copy_df < bottom_test) | (column_copy_df > top_test)]
+        outliers_df = outliers[outliers[column].isna() == False]
+        print(f"Bottom Value for Outliers: {bottom_test}")
+        print(f"Top Value for Outliers: {top_test}\n")
+        if show_general_outlier_info == True:
+            print(f"IQR (Range): {IQR}")
+            print(f"Q1: {Q1}")
+            print(f"Q3: {Q3}\n")
+            print(f"Minimum: {MIN}")
+            print(f"Maximum: {MAX}\n")
+            print(f"Outliers: \n {outliers_df}")
+            print(f"Number of Outliers: {len(outliers_df)}\n")
+        # Identify top and bottom outliers
+        if show_top_bottom_outliers == True:
+            outliers_bottom = outliers_df[outliers_df[column] < bottom_test]
+            outliers_top = outliers_df[outliers_df[column] > top_test]
+            print(f"Bottom Outliers: \n {outliers_bottom}")
+            print(f"Number of Bottom Outliers: {len(outliers_bottom)}\n")
+            print(f"Top Outliers: \n {outliers_top}")
+            print(f"Number of Top Outliers: {len(outliers_top)}")
+
+    @staticmethod
     def detect_outliers_zscore(df, column, num_std_dev = 'all'):
         # Testing z-score 
         df_slice= df[[column]] 

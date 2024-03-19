@@ -27,7 +27,7 @@ class DataFrameTransform:
     @staticmethod
     def detect_outliers_iqr(df, column, 
                             show_general_outlier_info =True, 
-                            show_top_bottom_outliers = False):
+                            show_top_bottom_outliers = True):
         # Testing IQR for outliers 
         column_copy_df = df[[column]]
 

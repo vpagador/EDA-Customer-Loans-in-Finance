@@ -38,5 +38,11 @@ class Plotter():
         plt.show()
 
     def plot_box_whisker(self, data, title, size=[400,400]):
-        fig = px.box(data,title= title,width=size[0],height=size[1])
+        fig = px.box(data,title=title,width=size[0],height=size[1])
         fig.show()
+
+
+def plot_outliers(data, column):
+    plot = Plotter()
+    plot.plot_histogram(data[column],column)
+    plot.plot_box_whisker(data[column],column)

@@ -121,8 +121,6 @@ class DataTransform:
         boxcox_arrays = []
         yeojohnson_arrays = []
         for column in columns_to_transform:
-            
-    
             log_array = self.apply_powertransformation(df,column,'log')
             log_arrays.append(log_array)
 
@@ -156,5 +154,18 @@ class DataTransform:
             results.append(key_max)
             return results
 
-            
-            
+def apply_powertransformations(df):
+    transformer = DataTransform()
+    loan_amount_transformed = transformer.apply_powertransformation(df,'loan_amount',transformation='boxcox')
+    funded_amount_transformed = transformer.apply_powertransformation(df,'funded_amount',transformation='yeojohnson')
+    funded_amount_inv_transformed = transformer.apply_powertransformation(df,'funded_amount_inv',transformation='yeojohnson')
+    int_rate_transformed = transformer.apply_powertransformation(df,'int_rate',transformation='yeojohnson')
+    instalment_transformed = transformer.apply_powertransformation(df,'instalment',transformation='boxcox')
+    
+    df['loan_amount'] = loan_amount_transformed
+    df['funded_amount'] = funded_amount_transformed
+    df['funded_amount_inv'] = funded_amount_inv_transformed
+    df['int_rate'] = int_rate_transformed
+    df['instalment'] = instalment_transformed
+
+    return df

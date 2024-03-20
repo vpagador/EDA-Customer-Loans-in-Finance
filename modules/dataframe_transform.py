@@ -111,6 +111,17 @@ def impute_all_null_columns(df):
     df = df.drop(columns=['mths_since_last_delinq','mths_since_last_record','next_payment_date','mths_since_last_major_derog'])
     return df
 
+def drop_outliers(df):
+    drop_conditions = ((df['annual_inc']<1000000) 
+                        & (df['inq_last_6mths'] < 7) 
+                        & (df['open_accounts'] < 30)  
+                        & (df['total_rec_late_fee'] < 100)
+                        & (df['recoveries'] < 10000)
+                        & (df['collection_recovery_fee'] < 32)
+                        & (df['collections_12_mths_ex_med'] == 0))
+    df = df[drop_conditions]
+    return df
+
 
 if __name__ == '__main__':
     df = pd.read_csv('loan_payments.csv')

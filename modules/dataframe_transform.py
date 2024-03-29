@@ -83,6 +83,26 @@ class DataFrameTransform:
             return negative_std_dev
         else:
             raise "Invalid input for num_std_dev, please specify the number of standard_deviations to return"
+        
+    def list_correlated_columns(self, df: pd.DataFrame , num_cols: list, threshold = 0.7):
+        '''
+        lists correlated columns given a dataframe of numerical columns only
+        
+        Parameters
+        ----------
+            df: pd.DataFrame
+                dataframe 
+            num_cols: list
+                a list of numerical columns in the dataframe
+            threshold: float
+                determined threshold for over correlated columns
+        '''
+        corr_df = df[num_cols].corr()
+        over_correlated_columns = []
+        for column in corr_df.columns:
+            if len(corr_df[column][(corr_df[column] > threshold) | (corr_df[column] < -(threshold))]) > 1:
+                over_correlated_columns.append(column)
+        return over_correlated_columns
 
     
 def impute_and_check(func):
@@ -120,6 +140,15 @@ def drop_outliers(df):
                         & (df['collection_recovery_fee'] < 32)
                         & (df['collections_12_mths_ex_med'] == 0))
     df = df[drop_conditions]
+    return df
+
+
+
+def drop_highly_correlated_columns(df, numerical_columns, threshold = 0.7):
+    data_transformer = DataFrameTransform()
+    over_correlated_columns = data_transformer.list_correlated_columns(df, numerical_columns, threshold)
+    print(f"Over correlated columns: {over_correlated_columns}")
+    df = df.drop(columns = over_correlated_columns)
     return df
 
 

@@ -14,6 +14,7 @@ class DataFrameInfo:
         column_tuple_2 = self.classify_into_datetime_categorical_columns()
         self.datetime_columns = column_tuple_2[0]
         self.categorical_columns = column_tuple_2[1]
+        self.null_columns = self.list_columns_with_nulls()
 
     def describe_column_dtypes(self) -> pd.DataFrame:
         column_dtypes = self.df.info(verbose=True, show_counts=False) 
@@ -99,6 +100,17 @@ class DataFrameInfo:
                 categorical_columns.append(col)
                 pass
         return datetime_columns, categorical_columns
+    
+    def show_column_skews(self, filter_for_skewed_columns = False):
+        skew_results =[self.df[column].skew() for column in self.numerical_columns]
+        dictionary = dict(zip(self.numerical_columns,skew_results))
+        skew_result_df = pd.DataFrame.from_dict(dictionary,orient ='index',columns=['skew'])
+        if filter_for_skewed_columns == False:
+            return skew_result_df
+
+        else:
+            only_skewed_columns_df = skew_result_df[(skew_result_df['skew'] > 0.5) | (skew_result_df['skew'] < -0.5)]
+            return only_skewed_columns_df
 
 
 if __name__=='__main__':

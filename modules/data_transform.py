@@ -132,9 +132,10 @@ class DataTransform:
 
         return log_arrays, boxcox_arrays, yeojohnson_arrays 
     
-    def powertransform_compare_method_effectiveness(self, df:pd.DataFrame,columns_to_transform:list):
-        log_arrays,boxcox_arrays, yeojohnson_arrays = self.powertransform_columns_all_methods()
+    def powertransform_compare_method_effectiveness(self, df:pd.DataFrame,columns_to_transform:list):                                                                                                               
+        log_arrays,boxcox_arrays, yeojohnson_arrays = self.powertransform_columns_all_methods(df, columns_to_transform)
         results =[]
+        
         for column, log_array, boxcox_array, yeojohnson_array in zip(columns_to_transform,log_arrays,boxcox_arrays, yeojohnson_arrays): 
             log_skew = log_array.skew()
             boxcox_skew = boxcox_array.skew()
@@ -152,20 +153,30 @@ class DataTransform:
             print(f"Original:\t\t\t{df[column].skew()}")
 
             results.append(key_max)
-            return results
+        return results
+    
 
-def apply_powertransformations(df):
+def create_transformed_arrays(df):
     transformer = DataTransform()
     loan_amount_transformed = transformer.apply_powertransformation(df,'loan_amount',transformation='boxcox')
     funded_amount_transformed = transformer.apply_powertransformation(df,'funded_amount',transformation='yeojohnson')
     funded_amount_inv_transformed = transformer.apply_powertransformation(df,'funded_amount_inv',transformation='yeojohnson')
     int_rate_transformed = transformer.apply_powertransformation(df,'int_rate',transformation='yeojohnson')
     instalment_transformed = transformer.apply_powertransformation(df,'instalment',transformation='boxcox')
-    
+
+    return (loan_amount_transformed,funded_amount_transformed,
+                               funded_amount_inv_transformed,int_rate_transformed,instalment_transformed)
+
+def apply_powertransformations(df):
+
+    (loan_amount_transformed,funded_amount_transformed,
+    funded_amount_inv_transformed,int_rate_transformed,instalment_transformed) = create_transformed_arrays(df)
+
     df['loan_amount'] = loan_amount_transformed
     df['funded_amount'] = funded_amount_transformed
     df['funded_amount_inv'] = funded_amount_inv_transformed
     df['int_rate'] = int_rate_transformed
     df['instalment'] = instalment_transformed
-
+    
     return df
+    

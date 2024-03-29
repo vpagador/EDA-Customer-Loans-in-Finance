@@ -31,9 +31,15 @@ class Plotter():
         plt.hist(data, color = color, edgecolor = edgecolor)
         plt.title(label=title)
         plt.show()
+    
+    def plot_multiple_histograms(self, df, columns):
+        fig = plt.figure(figsize = (15,15))
+        ax = fig.gca()
+        df[columns].hist(ax=ax, color = "skyblue", edgecolor = "gold")
+        plt.show()
 
     def plot_qq(self, data, title):
-        qqplot(data , scale=1 ,line='q', fit=True)
+        qqplot(data , scale=1 ,line='q')
         plt.title(label=title)
         plt.show()
 
@@ -46,3 +52,20 @@ def plot_outliers(data, column):
     plot = Plotter()
     plot.plot_histogram(data[column],column)
     plot.plot_box_whisker(data[column],column)
+
+def plot_post_transformation_comparisons(df, column_list, transformed_array_list,
+                                          colour_list = ['CornflowerBlue','Crimson',
+                                                         'DarkSeaGreen','DarkOrchid',
+                                                         'IndianRed']):
+    
+    comparison_df_list = []
+    for column, transformed_array in zip(column_list, transformed_array_list):
+        comparison_dataframe = pd.DataFrame({column:df[column],
+                                    f'{column}_transformed':transformed_array})    
+        comparison_df_list.append(comparison_dataframe)
+
+    for comparision_df,color in zip(comparison_df_list,colour_list):
+        print(f"ORIGINAL SKEW:{comparision_df[comparision_df.keys()[0]].skew()}," 
+            f"TRANSFORMED SKEW: {comparision_df[comparision_df.keys()[1]].skew()}" )
+        comparision_df.hist(figsize=(10,5), color = color, edgecolor = "gold")
+        plt.show()

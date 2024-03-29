@@ -10,6 +10,16 @@
             "database": "orders-db",
             "username": "maya",
             "connectionTimeout": 10
+        },
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "askForPassword": true,
+            "driver": "PostgreSQL",
+            "name": "pagila",
+            "database": "pagila",
+            "username": "root"
         }
     ]
 }

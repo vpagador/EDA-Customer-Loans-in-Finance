@@ -1,5 +1,4 @@
 import pandas as pd
-import seaborn as sns
 import matplotlib.pyplot as plt
 from plotly import express as px
 from statsmodels.graphics.gofplots import qqplot
@@ -25,12 +24,16 @@ class Plotter():
             plt.title(column)
         plt.show()
     
-    def plot_histogram(self, data, title, figsize=[3,3],
-                       color = "skyblue", edgecolor = "gold"):
+    def plot_histogram(self, data, title, color = "skyblue",figsize=[3,3],
+                        edgecolor = "gold"):
         plt.figure(figsize=figsize)
         plt.hist(data, color = color, edgecolor = edgecolor)
         plt.title(label=title)
         plt.show()
+
+    def plot_box_whisker(self, data, title,size=[400,400]):
+        fig = px.box(data,title,width=size[0],height=size[1])
+        fig.show()
     
     def plot_multiple_histograms(self, df, columns):
         fig = plt.figure(figsize = (15,15))
@@ -42,11 +45,6 @@ class Plotter():
         qqplot(data , scale=1 ,line='q')
         plt.title(label=title)
         plt.show()
-
-    def plot_box_whisker(self, data, title, size=[400,400]):
-        fig = px.box(data,title=title,width=size[0],height=size[1])
-        fig.show()
-
 
 def plot_outliers(data, column):
     plot = Plotter()

@@ -107,7 +107,6 @@ class DataFrameInfo:
         skew_result_df = pd.DataFrame.from_dict(dictionary,orient ='index',columns=['skew'])
         if filter_for_skewed_columns == False:
             return skew_result_df
-
         else:
             only_skewed_columns_df = skew_result_df[(skew_result_df['skew'] > 0.5) | (skew_result_df['skew'] < -0.5)]
             return only_skewed_columns_df

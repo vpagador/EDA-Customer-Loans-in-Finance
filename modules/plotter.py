@@ -1,5 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+from plotly import graph_objects as go
 from plotly import express as px
 from statsmodels.graphics.gofplots import qqplot
 
@@ -34,6 +35,18 @@ class Plotter():
     def plot_box_whisker(self, data, title,size=[400,400]):
         fig = px.box(data,title,width=size[0],height=size[1])
         fig.show()
+
+    def plot_comparison_box_whisker(self, data1, data2, column):
+        y0 = data1[column]
+        y1 = data2[column]
+    
+        fig = go.Figure()
+        fig.add_trace(go.Box(y=y0,name='Original'))
+        fig.add_trace(go.Box(y=y1,name='Outliers Removed'))
+        fig.update_layout(title=column)
+    
+        fig.show()
+
     
     def plot_multiple_histograms(self, df, columns):
         fig = plt.figure(figsize = (15,15))

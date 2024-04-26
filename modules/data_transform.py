@@ -82,19 +82,22 @@ class DataTransform:
         
         cast_col_types = self.read_casting_map()
         for col in cast_col_types.keys():
-            print(f"{col} --> {cast_col_types[col]}")
-            # Casts numerical types
-            if  cast_col_types[col] in ['int32', 'float32']:
-                try:
-                    df[col] = df[col].astype(np.dtype(cast_col_types[col]))  
-                except: 
-                    df[col] = df[col].astype(np.dtype('float32'))
-            # Casts datetypes
-            elif cast_col_types[col] in ['date']:
-                df[col] = df[col].apply(pd.to_datetime, format = 'mixed')
-            # Casts other types like category
+            if col in df.columns:
+                print(f"{col} --> {cast_col_types[col]}")
+                # Casts numerical types
+                if  cast_col_types[col] in ['int32', 'float32']:
+                    try:
+                        df[col] = df[col].astype(np.dtype(cast_col_types[col]))  
+                    except: 
+                        df[col] = df[col].astype(np.dtype('float32'))
+                # Casts datetypes
+                elif cast_col_types[col] in ['date']:
+                    df[col] = df[col].apply(pd.to_datetime, format = 'mixed')
+                # Casts other types like category
+                else:
+                    df[col] = df[col].astype(cast_col_types[col])
             else:
-                df[col] = df[col].astype(cast_col_types[col])
+                print('column not exist')
             
         return df
     

@@ -55,7 +55,7 @@ class DataTransform:
 
         return df
 
-    def encode_transform(self, df:pd.DataFrame, column = 'employment_length'):
+    def encode_transform(self, df:pd.DataFrame, columns = ['employment_length','grade','sub_grade']):
         '''
         Encodes employment_length column 
         
@@ -64,9 +64,10 @@ class DataTransform:
             df: pd.DataFrame
                 Data set represented in pandas dataframe
         '''
-        enc = OrdinalEncoder()
-        X = df[[column]]
-        df[[column]] = enc.fit_transform(X)
+        for column in columns:
+            enc = OrdinalEncoder()
+            X = df[[column]]
+            df[[column]] = enc.fit_transform(X)
    
         return df
     
